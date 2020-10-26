@@ -48,29 +48,29 @@ Item* Room::getItem(char* itemName) {
   for (int i = 0; i < sizeof(items); i++) {
     if (strcmp(items->at(i).getDescription(), itemName) == 0
 	|| strcmp(items->at(i).getNick(), itemName) == 0) {
-      return items.at(i);
+      return &items->at(i);
     }
   }
   return NULL;
 }
 void Room::setItem(Item newItem) {
-  items.push_back(newItem);
+  items->push_back(newItem);
 }
 char* Room::getRoomItems() {
   char* output = new char[160];
   for (int i = 0; sizeof(items); i++) {
     strcat(output, "\n");
-    strcat(output, items[i].getDescription());
+    strcat(output, items->at(i).getDescription());
   }
   return output;
 }
 void Room::removeItem(Item item) {
   for (int i = 0; sizeof(items); i++) {
-    if (strcmp(items[i].getDescription(), item.getDescription()) == 0) {
-      items.erase(items.begin()+i);
+    if (strcmp(items->at(i).getDescription(), item.getDescription()) == 0) {
+      items->erase(items->begin()+i);
     }
   }
 }
 Room Room::getExit(char* direction) {
-  return exits.at(direction);
+  return exits->at(direction);
 }

@@ -1,5 +1,6 @@
 //header for Room class
 
+#pragma once
 #include "Item.h"
 #include <bits/stdc++.h>
 #include <vector>

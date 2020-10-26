@@ -1,5 +1,7 @@
 //header for Item class
 
+#pragma once
+
 class Item {
 public:
   char description[80];

@@ -1,5 +1,7 @@
 //header for Command class
 
+#pragma once
+
 class Command {
 public:
   char command[80];
