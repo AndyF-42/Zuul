@@ -4,12 +4,14 @@
 #include <cstddef>
 #include "Room.h"
 
+using namespace std;
+
 Room::Room(char* inputDescription, char* inputRoom) {
   strcpy(description, inputDescription);
   strcpy(roomName, inputRoom);
 }
 
-void Room::setExit(char* direction, Room neighbor) {
+void Room::setExit(char* direction, Room* neighbor) {
   exits->insert({direction, neighbor});
 }
 char* Room::getShortDescription() {
@@ -32,10 +34,20 @@ char* Room::getExitString() {
   char* returnString = new char[50];
 
   strcpy(returnString, "Exits:");
-  /*
-  Set keys = exits.keySet();
-  iter stuff
-  */
+
+  for (unordered_map<char*, Room*>::iterator it = exits->begin(); it != exits->end(); ++it) {
+    strcat(returnString, " ");
+    strcat(returnString, it->first);
+  }
+  strcat(returnString, "\nIn this room you see:\n");
+  if (strcmp(getRoomItems(), "") == 0) {
+    strcat(returnString, "Nothing");
+  }
+  else {
+    strcat(returnString, "  ");
+    strcat(returnString, getRoomItems());
+  }
+  
   return returnString;
 }
 Item Room::getItem(int index) {
@@ -71,6 +83,6 @@ void Room::removeItem(Item item) {
     }
   }
 }
-Room Room::getExit(char* direction) {
+Room* Room::getExit(char* direction) {
   return exits->at(direction);
 }

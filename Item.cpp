@@ -3,10 +3,10 @@
 #include <cstring>
 #include "Item.h"
 
-Item::Item(char* newDescription, char* newNick, char* newTag) {
+Item::Item(char* newDescription, char* newNick, bool newTag) {
   strcpy(description, newDescription);
   strcpy(nick, newNick);
-  strcpy(tag, newTag);
+  isStone = newTag;
 }
 
 char* Item::getNick() {
@@ -15,6 +15,6 @@ char* Item::getNick() {
 char* Item::getDescription() {
   return description;
 }
-char* Item::getTag() {
-  return tag;
+bool Item::getTag() {
+  return isStone;
 }

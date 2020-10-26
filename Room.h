@@ -12,14 +12,14 @@ class Room {
 private:
   char description[160];
   char roomName[40];
-  unordered_map<char*, Room>* exits;
+  unordered_map<char*, Room*>* exits;
   vector<Item>* items;
   
   char* getExitString();
 
 public:
 
-  void setExit(char* direction, Room neighbor);
+  void setExit(char* direction, Room* neighbor);
   char* getShortDescription();
   char* getRoom();
   char* getLongDescription();
@@ -28,7 +28,7 @@ public:
   void setItem(Item newItem);
   char* getRoomItems();
   void removeItem(Item item);
-  Room getExit(char* direction);
+  Room* getExit(char* direction);
 
   Room(char* inputDescription, char* inputRoom);
 };

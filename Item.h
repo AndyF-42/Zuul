@@ -6,12 +6,12 @@ class Item {
 public:
   char description[80];
   char nick[20];
-  char tag[20];
+  bool isStone;
 
   char* getNick();
   char* getDescription();
-  char* getTag();
+  bool getTag();
   
   
-  Item(char* newDescription, char* newNick, char* newTag);
+  Item(char* newDescription, char* newNick, bool isStone);
 };
