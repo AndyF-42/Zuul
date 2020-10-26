@@ -10,6 +10,7 @@ Room::Room(char* inputDescription, char* inputRoom) {
   strcpy(description, inputDescription);
   strcpy(roomName, inputRoom);
   exits = new unordered_map<char*, Room*>();
+  items = new vector<Item>();
 }
 
 void Room::setExit(char* direction, Room* neighbor) {
@@ -71,11 +72,17 @@ void Room::setItem(Item newItem) {
 }
 char* Room::getRoomItems() {
   char* output = new char[160];
-  for (int i = 0; sizeof(items); i++) {
-    strcat(output, "\n");
-    strcat(output, items->at(i).getDescription());
+
+  if (items->size() == 0) {
+    return (char*)("");
   }
-  return output;
+  else {
+    for (vector<Item>::iterator it = items->begin(); it != items->end(); ++it) {
+      strcat(output, "\n");
+      strcat(output, (*it).getDescription());
+    }
+    return output;
+  }
 }
 void Room::removeItem(Item item) {
   for (int i = 0; sizeof(items); i++) {
