@@ -10,15 +10,15 @@ using namespace std;
 
 class Room {
 private:
-  char description[160];
+  char description[512];
   char roomName[40];
-  unordered_map<char*, Room*>* exits;
   vector<Item>* items;
   
   char* getExitString();
 
 public:
-
+  unordered_map<char*, Room*>* exits;
+  
   void setExit(char* direction, Room* neighbor);
   char* getShortDescription();
   char* getRoom();

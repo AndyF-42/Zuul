@@ -9,6 +9,7 @@ using namespace std;
 Room::Room(char* inputDescription, char* inputRoom) {
   strcpy(description, inputDescription);
   strcpy(roomName, inputRoom);
+  exits = new unordered_map<char*, Room*>();
 }
 
 void Room::setExit(char* direction, Room* neighbor) {
