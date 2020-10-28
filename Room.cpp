@@ -92,5 +92,11 @@ void Room::removeItem(Item item) {
   }
 }
 Room* Room::getExit(char* direction) {
-  return exits->at(direction);
+  unordered_map<char*, Room*>::const_iterator got = exits->find(direction);
+  if (got == exits->end()) {
+    return NULL;
+  }
+  else {
+    return got->second;
+  }
 }

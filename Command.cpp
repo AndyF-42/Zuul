@@ -5,8 +5,12 @@
 #include "Command.h"
 
 Command::Command(char* firstWord, char* secondWord) {
-  strcpy(command, firstWord);
-  strcpy(subject, secondWord);
+  if (firstWord != NULL) {
+    strcpy(command, firstWord);
+  }
+  if (secondWord != NULL) {
+    strcpy(subject, secondWord);
+  }
 }
 
 char* Command::getCommand() {

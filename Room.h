@@ -10,7 +10,7 @@ using namespace std;
 
 class Room {
 private:
-  char description[512];
+  char description[1024];
   char roomName[40];
   vector<Item>* items;
   

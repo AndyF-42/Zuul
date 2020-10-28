@@ -3,6 +3,7 @@
 #include <string.h>
 #include <cstddef>
 #include <cstring>
+#include <vector>
 #include <iostream>
 #include "Parser.h"
 
@@ -14,8 +15,7 @@ Parser::Parser() {
 
 Command Parser::getCommand() {
   char inputLine[80];
-  char word1[40];
-  char word2[40];
+  vector<char*> words;
 
   cout << ">> ";
   cin.get(inputLine, 80);
@@ -23,15 +23,29 @@ Command Parser::getCommand() {
  
   char *ptr;
   ptr = strtok(inputLine, " ");
-  strcpy(word1, ptr);
-  ptr = strtok(NULL, " ");
-  strcpy(word2, ptr);
 
-  if (commands.isCommand(word1)) {
-    return Command(word1, word2);
+  while (ptr != NULL) {
+    words.push_back(ptr);
+    ptr = strtok(NULL, " ");
+  }
+  
+  if (words.size() > 2 || words.size() < 1) {
+    cout << "1" << endl;
+    return Command(NULL, NULL);
+  }
+  else if (commands.isCommand(words[0])) {
+    if (words.size() == 2) {
+      cout << "2" << endl;
+      return Command(words[0], words[1]);
+    }
+    else {
+      cout << "3" << endl;
+      return Command(words[0], NULL);
+    }
   }
   else {
-    return Command(NULL, word2);
+    cout << "4" << endl;
+    return Command(NULL, NULL);
   }
   
 }

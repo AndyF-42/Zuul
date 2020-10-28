@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void createRooms(vector<Room*>* vRooms, Room* &currentRoom);
+void createRooms(vector<Room*>* &vRooms, Room* &currentRoom);
 bool processCommand(Command command, Parser* parser, vector<Item*>* &inventory, Room* &currentRoom, int &stonesPlaced, bool &nothingPlaced);
 void printInventory(vector<Item*>* inventory);
 void dropItem(Command command, vector<Item*>* &inventory, int &stonesPlaced, bool &nothingPlaced, Room* &currentRoom);
@@ -31,8 +31,8 @@ int main() {
   vector<Item*>* inventory = new vector<Item*>();
 
   createRooms(vRooms, currentRoom);
-  
 
+  
   //Inventory  
   Item* sword = new Item((char*)("An elvish sword of great antiquity"), (char*)("sword"), false);
   inventory->push_back(sword);
@@ -48,10 +48,14 @@ int main() {
   cout << "\nType \"help\" if you need help.\n" << endl;
   cout << currentRoom->getLongDescription() << endl;
 
+  
+  
   //while not finished, get commands
   bool finished = false;
   while (!finished) {
     Command command = parser->getCommand();
+    cout << "hi" << endl;
+    //cout << "got command" << endl;
     finished = processCommand(command, parser, inventory, currentRoom, stonesPlaced, nothingPlaced);
     if (stonesPlaced == 6 && notSaid) {
       cout << "Huh. You totally thought that would work and you would be able to get out." << endl;
@@ -70,15 +74,16 @@ int main() {
   
 }
 
-void createRooms(vector<Room*>* vRooms, Room* &currentRoom) {
+void createRooms(vector<Room*>* &vRooms, Room* &currentRoom) {
   //Create rooms
-  Room* mainCave = new Room((char*)("You are in a massive cave, with mysterious openings all around you.\nAbove you is an opening in the cave where light shines throubtgh.\nIn the middle of the room is a pedestal, with 6 holes of different shapes."), (char*)("Main Cave"));
+  Room* mainCave = new Room((char*)("You are in a large cave, with openings all around you.\nAbove is an opening where light shines through. In the\ncenter of the room is a pedestal with 6 holes."), (char*)("Main Cave"));
   Room* laboratory = new Room((char*)("Test tubes, pipettes, and beakers full of strange liquids\nfill the room. You probably shouldn't touch anything."), (char*)("Laboratory"));
-  Room* livingQuarters = new Room((char*)("This is where you assume people lived, whoever\nwould be crazy enough to live here. You notice\na bunk bed at the end of the room"), (char*)("Living Quarters"));
+  Room* livingQuarters = new Room((char*)("This is where you assume people lived, whoever\nwould be crazy enough to live here. You notice\na bunk bed at the end of the room."), (char*)("Living Quarters"));
 
   //Set Exits
   mainCave->setExit((char*)("north"), laboratory);
   mainCave->setExit((char*)("east"), livingQuarters);
+  
   currentRoom = mainCave; //start game in main cave
   vRooms->push_back(mainCave);
 
@@ -99,6 +104,8 @@ bool processCommand(Command command, Parser* parser, vector<Item*>* &inventory, 
   char commandWord[40];
   strcpy(commandWord, command.getCommand());
 
+  cout << commandWord << endl;
+  
   if (strcmp(commandWord, "help") == 0) {
     printHelp(parser);
   }
@@ -109,6 +116,7 @@ bool processCommand(Command command, Parser* parser, vector<Item*>* &inventory, 
     wantToQuit = quit(command);
   }
   if (strcmp(commandWord, "inventory") == 0) {
+    cout << "pog" << endl;
     printInventory(inventory);
   }
   if (strcmp(commandWord, "get") == 0) {
@@ -223,14 +231,26 @@ void goRoom(Command command, Room* &currentRoom) {
   strcpy(direction, command.getSubject());
 
   //Try to leave current room
-  Room* nextRoom = currentRoom->getExit(direction);
-
+  Room* nextRoom = NULL;
+  if (strcmp(direction, "north") == 0) {
+    nextRoom = currentRoom->getExit((char*)("north"));
+  }
+  else if (strcmp(direction, "east") == 0) {
+    nextRoom = currentRoom->getExit((char*)("east"));
+  }
+  else if (strcmp(direction, "south") == 0) {
+    nextRoom = currentRoom->getExit((char*)("south"));
+  }
+  else if (strcmp(direction, "west") == 0) {
+    nextRoom = currentRoom->getExit((char*)("west"));
+  }
+  
   if (nextRoom == NULL) {
     cout << "There is no exit that way!" << endl;
   }
   else {
     currentRoom = nextRoom;
-    cout << currentRoom->getLongDescription();
+    cout << currentRoom->getLongDescription() << endl;
   }
 }
 
