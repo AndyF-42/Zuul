@@ -30,21 +30,17 @@ Command Parser::getCommand() {
   }
   
   if (words.size() > 2 || words.size() < 1) {
-    cout << "1" << endl;
     return Command(NULL, NULL);
   }
   else if (commands.isCommand(words[0])) {
     if (words.size() == 2) {
-      cout << "2" << endl;
       return Command(words[0], words[1]);
     }
     else {
-      cout << "3" << endl;
       return Command(words[0], NULL);
     }
   }
   else {
-    cout << "4" << endl;
     return Command(NULL, NULL);
   }
   

@@ -1,13 +1,18 @@
 //body of Command class
 
+#include <iostream>
 #include <cstddef>
 #include <cstring>
 #include "Command.h"
 
+using namespace std;
+
 Command::Command(char* firstWord, char* secondWord) {
+  strcpy(command, "");
   if (firstWord != NULL) {
     strcpy(command, firstWord);
   }
+  strcpy(subject, "");
   if (secondWord != NULL) {
     strcpy(subject, secondWord);
   }
@@ -21,8 +26,8 @@ char* Command::getSubject() {
 }
 
 bool Command::isUnknown() {
-  return (command == NULL);
+  return (strcmp(command, "") == 0);
 }
 bool Command::hasSubject() {
-  return (subject != NULL);
+  return (strcmp(subject, "") != 0);
 }

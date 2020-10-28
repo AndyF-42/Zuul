@@ -4,8 +4,8 @@
 
 class CommandWords {
 private:
-  char validCommands[9][80] = {"go", "quit", "help", "inventory", "get",
-			       "drop", "look", "walkthrough", "eat"};
+  char validCommands[8][80] = {"go", "quit", "help", "inventory", "get",
+			       "drop", "look", "walkthrough"};
 
 public:
   bool isCommand(char* phrase);

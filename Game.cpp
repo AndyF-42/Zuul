@@ -12,13 +12,12 @@ using namespace std;
 
 void createRooms(vector<Room*>* &vRooms, Room* &currentRoom);
 bool processCommand(Command command, Parser* parser, vector<Item*>* &inventory, Room* &currentRoom, int &stonesPlaced, bool &nothingPlaced);
-void printInventory(vector<Item*>* inventory);
+void printInventory(Command command, vector<Item*>* inventory);
 void dropItem(Command command, vector<Item*>* &inventory, int &stonesPlaced, bool &nothingPlaced, Room* &currentRoom);
 void getItem(Command command, Room* &currentRoom, vector<Item*>* &inventory);
-void printHelp(Parser* parser);
+void printHelp(Command command);
 void goRoom(Command command, Room* &currentRoom);
-void eat(Command command);
-void ruinGame();
+void ruinGame(Command command);
 bool quit(Command command);
 
 int main() {
@@ -54,19 +53,21 @@ int main() {
   //while not finished, get commands
   bool finished = false;
   while (!finished) {
+    cout << endl;
     Command command = parser->getCommand();
-    cout << "got command" << endl;
+    cout << endl;
     finished = processCommand(command, parser, inventory, currentRoom, stonesPlaced, nothingPlaced);
     if (stonesPlaced == 6 && notSaid) {
       cout << "Huh. You totally thought that would work and you would be able to get out." << endl;
       cout << "What else would you even need? Nothing!" << endl;
+      notSaid = false;
     }
     if (nothingPlaced) {
       cout << "Turns out \"Nothing\" is exactly what you needed. The pedastal turns" << endl;
       cout << "into an upward beam, shining straight through the hole in the ceiling." << endl;
       cout << "You step into the beam and it lifts you off your feet, carrying you up" << endl;
       cout << "through the hole. Unfortunately, on your way up all the items you collected" << endl;
-      cout << "fall out. But hey, you finally escaped!" << endl;
+      cout << "fall out. But hey, you finally escaped!\n" << endl;
       finished = true;
     }
   }
@@ -178,10 +179,8 @@ bool processCommand(Command command, Parser* parser, vector<Item*>* &inventory, 
   char commandWord[40];
   strcpy(commandWord, command.getCommand());
 
-  cout << commandWord << endl;
-  
   if (strcmp(commandWord, "help") == 0) {
-    printHelp(parser);
+    printHelp(command);
   }
   if (strcmp(commandWord, "go") == 0) {
     goRoom(command, currentRoom);
@@ -190,8 +189,7 @@ bool processCommand(Command command, Parser* parser, vector<Item*>* &inventory, 
     wantToQuit = quit(command);
   }
   if (strcmp(commandWord, "inventory") == 0) {
-    cout << "pog" << endl;
-    printInventory(inventory);
+    printInventory(command, inventory);
   }
   if (strcmp(commandWord, "get") == 0) {
     getItem(command, currentRoom, inventory);
@@ -203,18 +201,20 @@ bool processCommand(Command command, Parser* parser, vector<Item*>* &inventory, 
     cout << currentRoom->getLongDescription() << endl;
   }
   if (strcmp(commandWord, "walkthrough") == 0) {
-    ruinGame();
-  }
-  if (strcmp(commandWord, "eat") == 0) {
-    eat(command);
+    ruinGame(command);
   }
   return wantToQuit;
 }
 
-void printInventory(vector<Item*>* inventory) {
-  cout << "You are holding:" << endl;
-  for (int i = 0; i < inventory->size(); i++) {
-    cout << " " << inventory->at(i)->getDescription() << endl;
+void printInventory(Command command, vector<Item*>* inventory) {
+  if (command.hasSubject()) {
+    cout << "You used the action \"inventory\" in a way I don't understand." << endl;
+  }
+  else {
+    cout << "You are holding:" << endl;
+    for (int i = 0; i < inventory->size(); i++) {
+      cout << " " << inventory->at(i)->getDescription() << endl;
+    }
   }
 }
 
@@ -231,7 +231,7 @@ void dropItem(Command command, vector<Item*>* &inventory, int &stonesPlaced, boo
   //try to get the item
   Item* newItem = NULL;
   int index = 0;
-  for (int i = 0; inventory->size(); i++) {
+  for (int i = 0; i < inventory->size(); i++) {
     if (strcmp(inventory->at(i)->getDescription(), item) == 0 ||
 	strcmp(inventory->at(i)->getNick(), item) == 0) {
       newItem = inventory->at(i);
@@ -244,13 +244,13 @@ void dropItem(Command command, vector<Item*>* &inventory, int &stonesPlaced, boo
     cout << "That item is not in your inventory!" << endl;
   }
   else {
-    if (newItem->getTag()) {
+    if (newItem->getTag() && strcmp(currentRoom->getRoom(), "Main Cave") == 0) {
       cout << "You look at the stone as it glows bright and burns up." << endl;
       cout << "You frantically drop the stone but instead of falling down," << endl;
       cout << "it is attracted to the pedastal in the center of the cave." << endl;
       stonesPlaced++;
     }
-    else if (strcmp(newItem->getNick(), "nothing") == 0 && stonesPlaced == 6) {
+    else if (strcmp(newItem->getNick(), "nothing") == 0 && stonesPlaced == 6 && strcmp(currentRoom->getRoom(), "Main Cave") == 0) {
       nothingPlaced = true;
     }
     else {
@@ -286,14 +286,19 @@ void getItem(Command command, Room* &currentRoom, vector<Item*>* &inventory) {
   }
 }
 
-void printHelp(Parser* parser) {
-  cout << "You wander around the room and you find" << endl;
-  cout << "a strange poster on the wall. It says:\n" << endl;
-  cout << "Your command words are:" << endl;
-  parser->showCommands();
-  cout << "\nNote: \"walkthrough\" will spoil the entire game!" << endl;
-  cout << "\nAlso note that when dropping and getting items" << endl;
-  cout << "you do not need to spell out the full name." << endl;
+void printHelp(Command command) {
+  if (command.hasSubject()) {
+    cout << "You used the action \"help\" in a way I don't understand." << endl;
+  }
+  else {
+    cout << "You wander around the room and you find" << endl;
+    cout << "a strange poster on the wall. It says:\n" << endl;
+    cout << "Your command words are:" << endl;
+    cout << "go get drop inventory look help walthrough quit" << endl;
+    cout << "\nNote: \"walkthrough\" will spoil the entire game!" << endl;
+    cout << "\nAlso note that when dropping and getting items" << endl;
+    cout << "you do not need to spell out the full name." << endl;
+  }
 }
 
 void goRoom(Command command, Room* &currentRoom) {
@@ -353,21 +358,21 @@ void goRoom(Command command, Room* &currentRoom) {
   }
 }
 
-void eat(Command command) {
-
-}
-
-void ruinGame() {
-  cout << "You consider for a moment not looking at the walkthrough. After all," << endl;
-  cout << "what fun would this be if all the instructions were perfectly laid out" <<  endl;
-  cout << "for you. Then you realize you could die down here so you don't care." << endl;
-  cout << "\nStep 1: Find and place all 6 stones into the pedestal" << endl;
-  cout << "The stones are in the Main Cave, Main Sewer, Sewage Dump, Dining Room, Upper bunk and Storage Room" << endl;
-  cout << "Place a stone by having it in your inventory and dropping it" << endl;
-  cout << "Step 2: Find and place \"Nothing\" into the pedestal by dropping it" << endl;
-  cout << "\"Nothing\" is found in the Underground Reservoir" << endl;
-  cout << "Ez win." << endl;
-  
+void ruinGame(Command command) {
+  if (command.hasSubject()) {
+    cout << "You used the action \"walkthrough\" in a way I don't understand." << endl;
+  }
+  else {
+    cout << "You consider for a moment not looking at the walkthrough. After all," << endl;
+    cout << "what fun would this be if all the instructions were perfectly laid out" <<  endl;
+    cout << "for you. Then you realize you could die down here so you don't care." << endl;
+    cout << "\nStep 1: Find and place all 6 stones into the pedestal" << endl;
+    cout << "The stones are in the Main Cave, South Sewer, Sewage Dump, Dining Room, Upper bunk and Storage Room" << endl;
+    cout << "Place a stone by having it in your inventory and dropping it" << endl;
+    cout << "Step 2: Find and place \"Nothing\" into the pedestal by dropping it" << endl;
+    cout << "\"Nothing\" is found in the Underground Reservoir" << endl;
+    cout << "Ez win." << endl;
+  }
 }
 
 bool quit(Command command) {

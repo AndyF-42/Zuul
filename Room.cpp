@@ -41,12 +41,11 @@ char* Room::getExitString() {
     strcat(returnString, " ");
     strcat(returnString, it->first);
   }
-  strcat(returnString, "\nIn this room you see:\n");
+  strcat(returnString, "\nIn this room you see:");
   if (strcmp(getRoomItems(), "") == 0) {
-    strcat(returnString, "Nothing");
+    strcat(returnString, "\nNothing");
   }
   else {
-    strcat(returnString, "  ");
     strcat(returnString, getRoomItems());
   }
   
@@ -59,7 +58,7 @@ Item* Room::getItem(char* itemName) {
   for (int i = 0; i < strlen(itemName); i++) {
     itemName[i] = tolower(itemName[i]);
   }
-  for (int i = 0; i < sizeof(items); i++) {
+  for (int i = 0; i < items->size(); i++) {
     if (strcmp(items->at(i)->getDescription(), itemName) == 0
 	|| strcmp(items->at(i)->getNick(), itemName) == 0) {
       return items->at(i);
@@ -78,7 +77,7 @@ char* Room::getRoomItems() {
   }
   else {
     for (vector<Item*>::iterator it = items->begin(); it != items->end(); ++it) {
-      strcat(output, "\n");
+      strcat(output, "\n ");
       strcat(output, (*it)->getDescription());
     }
     return output;
@@ -88,6 +87,7 @@ void Room::removeItem(Item* item) {
   for (int i = 0; sizeof(items); i++) {
     if (strcmp(items->at(i)->getDescription(), item->getDescription()) == 0) {
       items->erase(items->begin()+i);
+      break;
     }
   }
 }
