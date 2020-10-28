@@ -10,7 +10,7 @@ Room::Room(char* inputDescription, char* inputRoom) {
   strcpy(description, inputDescription);
   strcpy(roomName, inputRoom);
   exits = new unordered_map<char*, Room*>();
-  items = new vector<Item>();
+  items = new vector<Item*>();
 }
 
 void Room::setExit(char* direction, Room* neighbor) {
@@ -52,7 +52,7 @@ char* Room::getExitString() {
   
   return returnString;
 }
-Item Room::getItem(int index) {
+Item* Room::getItem(int index) {
   return items->at(index);
 }
 Item* Room::getItem(char* itemName) {
@@ -60,14 +60,14 @@ Item* Room::getItem(char* itemName) {
     itemName[i] = tolower(itemName[i]);
   }
   for (int i = 0; i < sizeof(items); i++) {
-    if (strcmp(items->at(i).getDescription(), itemName) == 0
-	|| strcmp(items->at(i).getNick(), itemName) == 0) {
-      return &items->at(i);
+    if (strcmp(items->at(i)->getDescription(), itemName) == 0
+	|| strcmp(items->at(i)->getNick(), itemName) == 0) {
+      return items->at(i);
     }
   }
   return NULL;
 }
-void Room::setItem(Item newItem) {
+void Room::setItem(Item* newItem) {
   items->push_back(newItem);
 }
 char* Room::getRoomItems() {
@@ -77,23 +77,23 @@ char* Room::getRoomItems() {
     return (char*)("");
   }
   else {
-    for (vector<Item>::iterator it = items->begin(); it != items->end(); ++it) {
+    for (vector<Item*>::iterator it = items->begin(); it != items->end(); ++it) {
       strcat(output, "\n");
-      strcat(output, (*it).getDescription());
+      strcat(output, (*it)->getDescription());
     }
     return output;
   }
 }
-void Room::removeItem(Item item) {
+void Room::removeItem(Item* item) {
   for (int i = 0; sizeof(items); i++) {
-    if (strcmp(items->at(i).getDescription(), item.getDescription()) == 0) {
+    if (strcmp(items->at(i)->getDescription(), item->getDescription()) == 0) {
       items->erase(items->begin()+i);
     }
   }
 }
 Room* Room::getExit(char* direction) {
   unordered_map<char*, Room*>::const_iterator got = exits->find(direction);
-  if (got == exits->end()) {
+  if (got == exits->end()) { //did not find room
     return NULL;
   }
   else {

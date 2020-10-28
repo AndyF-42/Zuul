@@ -12,7 +12,7 @@ class Room {
 private:
   char description[1024];
   char roomName[40];
-  vector<Item>* items;
+  vector<Item*>* items;
   
   char* getExitString();
 
@@ -23,11 +23,11 @@ public:
   char* getShortDescription();
   char* getRoom();
   char* getLongDescription();
-  Item getItem(int index);
+  Item* getItem(int index);
   Item* getItem(char* itemName);
-  void setItem(Item newItem);
+  void setItem(Item* newItem);
   char* getRoomItems();
-  void removeItem(Item item);
+  void removeItem(Item* item);
   Room* getExit(char* direction);
 
   Room(char* inputDescription, char* inputRoom);
