@@ -76,7 +76,6 @@ int main() {
 
 void createRooms(vector<Room*>* &vRooms, Room* &currentRoom) {
   //Create rooms
-  //IDEA - add a null character to end of room exit directions
   Room* mainCave = new Room((char*)("You are in a large cave, with openings all around you.\nAbove is an opening where light shines through. In the\ncenter of the room is a pedestal with 6 holes."), (char*)("Main Cave"));
   Room* laboratory = new Room((char*)("Test tubes, pipettes, and beakers full of strange liquids\nfill the room. You probably shouldn't touch anything."), (char*)("Laboratory"));
   Room* livingQuarters = new Room((char*)("This is where you assume people lived, whoever\nwould be crazy enough to live here. You notice\na bunk bed at the end of the room."), (char*)("Living Quarters"));
@@ -90,7 +89,7 @@ void createRooms(vector<Room*>* &vRooms, Room* &currentRoom) {
   Room* westSewer = new Room((char*)("This is the west section of the sewer."), (char*)("West Sewer"));
   Room* southSewer = new Room((char*)("This is the south section of the sewer."), (char*)("South Sewer"));
   Room* northSewer = new Room((char*)("This is the northern section of the sewer. You hear water up ahead."), (char*)("North Sewer"));
-  Room* sewageDump = new Room((char*)("There's a massive, gushing waterfall full of sewage, carrying\n it out to who knows where. You wonder why there is such a\nlarge sewage system for just a small underground bunker."), (char*)("Sewage Dump"));
+  Room* sewageDump = new Room((char*)("A massive, gushing waterfall of sewage, runs to\nwho knows where. You wonder why there is such a\nlarge sewage system for just a small underground bunker."), (char*)("Sewage Dump"));
   Room* undergroundReservoir = new Room((char*)("You are in front of a massive reservoir."), (char*)("Underground Reservoir"));
   Room* secretRoom = new Room((char*)("There are files and cabinets all over, each containing hundreds\nof papers. You are too overwhelmed to read them all"), (char*)("Storage Room"));
 
@@ -99,44 +98,46 @@ void createRooms(vector<Room*>* &vRooms, Room* &currentRoom) {
   mainCave->setExit((char*)("east"), livingQuarters);
   mainCave->setExit((char*)("south"), kitchen);
   mainCave->setExit((char*)("west"), lounge);
-  //mainCave->setItem(new Item());
+  mainCave->setItem(new Item((char*)("A spherical orange stone"), (char*)("stone"), true));
   currentRoom = mainCave; //start game in main cave
   vRooms->push_back(mainCave);
 
   laboratory->setExit((char*)("south"), mainCave);
-  //laboratory->setExit((char*)("northeast"), secretRoom);
+  laboratory->setExit((char*)("northeast"), secretRoom);
   vRooms->push_back(laboratory);
 
   livingQuarters->setExit((char*)("west"), mainCave);
-  //livingQuarters->setExit((char*)("up"), upperBunk);
+  livingQuarters->setExit((char*)("up"), upperBunk);
   vRooms->push_back(livingQuarters);
 
   kitchen->setExit((char*)("north"), mainCave);
   kitchen->setExit((char*)("east"), diningRoom);
-  //kitchen->setExit((char*)("southwest"), pantry);
+  kitchen->setExit((char*)("southwest"), pantry);
   kitchen->setExit((char*)("west"), pianoRoom);
   vRooms->push_back(kitchen);
 
   lounge->setExit((char*)("east"), mainCave);
   lounge->setExit((char*)("south"), pianoRoom);
-  //lounge->setExit((char*)("down"), mainSewer);
+  lounge->setExit((char*)("down"), mainSewer);
   vRooms->push_back(lounge);
 
   pantry->setExit((char*)("northeast"), kitchen);
   vRooms->push_back(pantry);
 
   diningRoom->setExit((char*)("north"), kitchen);
+  diningRoom->setItem(new Item((char*)("A shiny green emerald"), (char*)("emerald"), true));
   vRooms->push_back(diningRoom);
 
   pianoRoom->setExit((char*)("east"), kitchen);
   pianoRoom->setExit((char*)("north"), lounge);
   vRooms->push_back(pianoRoom);
 
-  //upperBunk->setExit((char*)("down"), livingQuarters);
+  upperBunk->setExit((char*)("down"), livingQuarters);
+  upperBunk->setItem(new Item((char*)("A jet black cut of obsidian"), (char*)("obsidian"), true));
   vRooms->push_back(upperBunk);
 
   mainSewer->setExit((char*)("north"), northSewer);
-  //mainSewer->setExit((char*)("up"), lounge);
+  mainSewer->setExit((char*)("up"), lounge);
   mainSewer->setExit((char*)("south"), southSewer);
   mainSewer->setExit((char*)("west"), westSewer);
   vRooms->push_back(mainSewer);
@@ -145,21 +146,25 @@ void createRooms(vector<Room*>* &vRooms, Room* &currentRoom) {
   vRooms->push_back(westSewer);
 
   southSewer->setExit((char*)("north"), mainSewer);
+  southSewer->setItem(new Item((char*)("A slimy, green, sewage-covered rock"), (char*)("rock"), true));
   vRooms->push_back(southSewer);
 
   northSewer->setExit((char*)("south"), mainSewer);
   northSewer->setExit((char*)("north"), sewageDump);
   vRooms->push_back(northSewer);
 
-  sewageDump->setExit((char*)("north"), northSewer);
-  sewageDump->setExit((char*)("north"), undergroundReservoir);
+  sewageDump->setExit((char*)("west"), northSewer);
+  sewageDump->setExit((char*)("southeast"), undergroundReservoir);
+  sewageDump->setItem(new Item((char*)("A crystal-clear diamond"), (char*)("diamond"), true));
   vRooms->push_back(sewageDump);
 
-  //undergroundReservoir->setExit((char*)("northwest"), sewageDump);
-  //undergroundReservoir->setExit((char*)("up"), mainCave);
+  undergroundReservoir->setExit((char*)("northwest"), sewageDump);
+  undergroundReservoir->setExit((char*)("up"), mainCave);
+  undergroundReservoir->setItem(new Item((char*)("Nothing"), (char*)("nothing"), false));
   vRooms->push_back(undergroundReservoir);
 
-  //secretRoom->setExit((char*)("southwest"), laboratory);
+  secretRoom->setExit((char*)("southwest"), laboratory);
+  secretRoom->setItem(new Item((char*)("A bright blue sapphire"), (char*)("sapphire"), true));
   vRooms->push_back(secretRoom);
   
 }
@@ -222,15 +227,16 @@ void dropItem(Command command, vector<Item*>* &inventory, int &stonesPlaced, boo
   
   char item[80];
   strcpy(item, command.getSubject());
-
+  
   //try to get the item
-  Item* newItem;
+  Item* newItem = NULL;
   int index = 0;
   for (int i = 0; inventory->size(); i++) {
     if (strcmp(inventory->at(i)->getDescription(), item) == 0 ||
 	strcmp(inventory->at(i)->getNick(), item) == 0) {
       newItem = inventory->at(i);
       index = i;
+      break;
     }
   }
 
@@ -304,7 +310,8 @@ void goRoom(Command command, Room* &currentRoom) {
   //Try to leave current room
   Room* nextRoom = NULL;
   //nextRoom = currentRoom->getExit(direction);
-  
+
+  //Hard coding it because it doesn't work otherwise??
   if (strcmp(direction, "north") == 0) {
     nextRoom = currentRoom->getExit((char*)("north"));
   }
@@ -316,6 +323,24 @@ void goRoom(Command command, Room* &currentRoom) {
   }
   else if (strcmp(direction, "west") == 0) {
     nextRoom = currentRoom->getExit((char*)("west"));
+  }
+  else if (strcmp(direction, "up") == 0) {
+    nextRoom = currentRoom->getExit((char*)("up"));
+  }
+  else if (strcmp(direction, "down") == 0) {
+    nextRoom = currentRoom->getExit((char*)("down"));
+  }
+  else if (strcmp(direction, "northeast") == 0) {
+    nextRoom = currentRoom->getExit((char*)("northeast"));
+  }
+  else if (strcmp(direction, "southwest") == 0) {
+    nextRoom = currentRoom->getExit((char*)("southwest"));
+  }
+  else if (strcmp(direction, "southeast") == 0) {
+    nextRoom = currentRoom->getExit((char*)("southeast"));
+  }
+  else if (strcmp(direction, "northwest") == 0) {
+    nextRoom = currentRoom->getExit((char*)("northwest"));
   }
   
   
