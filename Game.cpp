@@ -1,5 +1,10 @@
+//MAIN CLASS
 
-//main Game class
+//Author: Andy Fleischer
+//Credits:
+//  Michael Kolling and David J. Barnes -
+//    borrowed a lot of their Zuul Java code
+//    and translated it to c++
 
 #include <iostream>
 #include "Item.h"
@@ -20,6 +25,7 @@ void goRoom(Command command, Room* &currentRoom);
 void ruinGame(Command command);
 bool quit(Command command);
 
+//main method
 int main() {
 
   Parser* parser = new Parser();
@@ -31,7 +37,6 @@ int main() {
   vector<Item*>* inventory = new vector<Item*>();
 
   createRooms(vRooms, currentRoom);
-
   
   //Inventory  
   Item* sword = new Item((char*)("An elvish sword of great antiquity"), (char*)("sword"), false);
@@ -57,12 +62,12 @@ int main() {
     Command command = parser->getCommand();
     cout << endl;
     finished = processCommand(command, parser, inventory, currentRoom, stonesPlaced, nothingPlaced);
-    if (stonesPlaced == 6 && notSaid) {
+    if (stonesPlaced == 6 && notSaid) { //all 6 stones in and have not been here before
       cout << "Huh. You totally thought that would work and you would be able to get out." << endl;
       cout << "What else would you even need? Nothing!" << endl;
       notSaid = false;
     }
-    if (nothingPlaced) {
+    if (nothingPlaced) { //placed the "nothing" (WIN CONDITION)
       cout << "Turns out \"Nothing\" is exactly what you needed. The pedastal turns" << endl;
       cout << "into an upward beam, shining straight through the hole in the ceiling." << endl;
       cout << "You step into the beam and it lifts you off your feet, carrying you up" << endl;
@@ -75,6 +80,7 @@ int main() {
   
 }
 
+//set up all the rooms, room exits, and room items
 void createRooms(vector<Room*>* &vRooms, Room* &currentRoom) {
   //Create rooms
   Room* mainCave = new Room((char*)("You are in a large cave, with openings all around you.\nAbove is an opening where light shines through. In the\ncenter of the room is a pedestal with 6 holes."), (char*)("Main Cave"));
@@ -170,15 +176,17 @@ void createRooms(vector<Room*>* &vRooms, Room* &currentRoom) {
   
 }
 
+//process a given command and call respective function
 bool processCommand(Command command, Parser* parser, vector<Item*>* &inventory, Room* &currentRoom, int &stonesPlaced, bool &nothingPlaced) {
   bool wantToQuit = false;
 
-  if (command.isUnknown()) {
+  if (command.isUnknown()) { //unknown command
     cout << "I do not know what you mean..." << endl;
   }
   char commandWord[40];
   strcpy(commandWord, command.getCommand());
 
+  //check which command it is, and call the respective function
   if (strcmp(commandWord, "help") == 0) {
     printHelp(command);
   }
@@ -197,27 +205,32 @@ bool processCommand(Command command, Parser* parser, vector<Item*>* &inventory, 
   if (strcmp(commandWord, "drop") == 0) {
     dropItem(command, inventory, stonesPlaced, nothingPlaced, currentRoom);
   }
-  if (strcmp(commandWord, "look") == 0) {
+  if (strcmp(commandWord, "look") == 0) { //"look" just means get the room description again
     cout << currentRoom->getLongDescription() << endl;
   }
   if (strcmp(commandWord, "walkthrough") == 0) {
     ruinGame(command);
   }
-  return wantToQuit;
+  return wantToQuit; //will be false unless user called quit
 }
 
+//print out contents in inventory
 void printInventory(Command command, vector<Item*>* inventory) {
-  if (command.hasSubject()) {
+  if (command.hasSubject()) { //if user said "inventory ____", say you don't understand
     cout << "You used the action \"inventory\" in a way I don't understand." << endl;
   }
   else {
     cout << "You are holding:" << endl;
-    for (int i = 0; i < inventory->size(); i++) {
+    for (int i = 0; i < inventory->size(); i++) { //print out items
       cout << " " << inventory->at(i)->getDescription() << endl;
+    }
+    if (inventory->size() == 0) { //holding no items
+      cout << "Nothing" << endl;
     }
   }
 }
 
+//drop a given item from inventory into room
 void dropItem(Command command, vector<Item*>* &inventory, int &stonesPlaced, bool &nothingPlaced, Room* &currentRoom) {
   
   if (!command.hasSubject()) { //cannot drop if no second word
@@ -228,7 +241,7 @@ void dropItem(Command command, vector<Item*>* &inventory, int &stonesPlaced, boo
   char item[80];
   strcpy(item, command.getSubject());
   
-  //try to get the item
+  //try to get the item by checking description and nick for a match in inventory
   Item* newItem = NULL;
   int index = 0;
   for (int i = 0; i < inventory->size(); i++) {
@@ -240,28 +253,30 @@ void dropItem(Command command, vector<Item*>* &inventory, int &stonesPlaced, boo
     }
   }
 
-  if (newItem == NULL) {
+  if (newItem == NULL) { //item was not found in inventory
     cout << "That item is not in your inventory!" << endl;
   }
-  else {
-    if (newItem->getTag() && strcmp(currentRoom->getRoom(), "Main Cave") == 0) {
+  else { //item found
+    if (newItem->getTag() && strcmp(currentRoom->getRoom(), "Main Cave") == 0) {//special message for stones
       cout << "You look at the stone as it glows bright and burns up." << endl;
       cout << "You frantically drop the stone but instead of falling down," << endl;
       cout << "it is attracted to the pedastal in the center of the cave." << endl;
       stonesPlaced++;
     }
-    else if (strcmp(newItem->getNick(), "nothing") == 0 && stonesPlaced == 6 && strcmp(currentRoom->getRoom(), "Main Cave") == 0) {
+    else if (strcmp(newItem->getNick(), "nothing") == 0 && stonesPlaced == 6 && strcmp(currentRoom->getRoom(), "Main Cave") == 0) { //WIN CONDITION FULFILLED
       nothingPlaced = true;
     }
-    else {
+    else { //otherwise just say it was dropped and place in room
       currentRoom->setItem(newItem);
       cout << item << " dropped." << endl;
     }
+    //always remove the item
     inventory->erase(inventory->begin() + index);
   }
     
 }
 
+//get given item from room
 void getItem(Command command, Room* &currentRoom, vector<Item*>* &inventory) {
   if (!command.hasSubject()) { //no specified item to get
     cout << "Get what?" << endl;
@@ -271,26 +286,29 @@ void getItem(Command command, Room* &currentRoom, vector<Item*>* &inventory) {
   char item[80];
   strcpy(item, command.getSubject());
 
+  //find the item
   Item* newItem = currentRoom->getItem(item);
 
-  if (newItem == NULL) {
+  if (newItem == NULL) { //item is not in room
     cout << "That item is not here!" << endl;
   }
   else {
-    if (strcmp(newItem->getNick(), "nothing") == 0) {
+    if (strcmp(newItem->getNick(), "nothing") == 0) { //special message for getting "nothing"
       cout << "You aren't quite sure what \"Nothing\" is, but you pick it up anyway." << endl;
     }
+    //add item to inventory, remove from room, say you got it
     inventory->push_back(newItem);
     currentRoom->removeItem(newItem);
     cout << item << " acquired." << endl;
   }
 }
 
+//print out the commands and some extra notes
 void printHelp(Command command) {
-  if (command.hasSubject()) {
+  if (command.hasSubject()) { //user said "help ____", say you don't understand
     cout << "You used the action \"help\" in a way I don't understand." << endl;
   }
-  else {
+  else { //help message
     cout << "You wander around the room and you find" << endl;
     cout << "a strange poster on the wall. It says:\n" << endl;
     cout << "Your command words are:" << endl;
@@ -301,6 +319,7 @@ void printHelp(Command command) {
   }
 }
 
+//go to the next room in a given direction
 void goRoom(Command command, Room* &currentRoom) {
   if (!command.hasSubject()) {//no second word, don't know where to go
     cout << "Go where?" << endl;
@@ -310,13 +329,10 @@ void goRoom(Command command, Room* &currentRoom) {
   char direction[40];
   strcpy(direction, command.getSubject());
 
-  
-  
   //Try to leave current room
   Room* nextRoom = NULL;
-  //nextRoom = currentRoom->getExit(direction);
 
-  //Hard coding it because it doesn't work otherwise??
+  //Hard coding directions because it doesn't work otherwise??
   if (strcmp(direction, "north") == 0) {
     nextRoom = currentRoom->getExit((char*)("north"));
   }
@@ -348,21 +364,21 @@ void goRoom(Command command, Room* &currentRoom) {
     nextRoom = currentRoom->getExit((char*)("northwest"));
   }
   
-  
-  if (nextRoom == NULL) {
+  if (nextRoom == NULL) { //invalid direction or no exit that way
     cout << "There is no exit that way!" << endl;
   }
-  else {
+  else { //move to the next room and give description
     currentRoom = nextRoom;
     cout << currentRoom->getLongDescription() << endl;
   }
 }
 
+//spoil the game by giving detailed instructions on how to win
 void ruinGame(Command command) {
-  if (command.hasSubject()) {
+  if (command.hasSubject()) { //user said "walkthrough ___", say you don't understand
     cout << "You used the action \"walkthrough\" in a way I don't understand." << endl;
   }
-  else {
+  else { //walkthrough message
     cout << "You consider for a moment not looking at the walkthrough. After all," << endl;
     cout << "what fun would this be if all the instructions were perfectly laid out" <<  endl;
     cout << "for you. Then you realize you could die down here so you don't care." << endl;
@@ -375,8 +391,9 @@ void ruinGame(Command command) {
   }
 }
 
+//quit the game (return true so the game knows to quit)
 bool quit(Command command) {
-  if (command.hasSubject()) {
+  if (command.hasSubject()) { //user said "quit ____", say you don't understand
     cout << "You used the action \"quit\" in a way I don't understand." << endl;
     return false;
   }
